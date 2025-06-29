@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Braeden Matrice Simulator</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; }
+    input { width: 3rem; margin: 0 0.5rem; }
+    .row { display: flex; }
+    .cell {
+      width: 2rem; height: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid #ccc; margin: 1px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Braeden Matrice</h1>
+  <div>
+    n: <input id="n" type="number" value="2" min="1" step="1">
+    α: <input id="alpha" type="number" value="1" step="0.1">
+    <button id="go">Generate</button>
+  </div>
+  <div id="output"></div>
+
+  <script>
+  // Braeden Matrice in JS
+  function braedenMatrix(n, alpha) {
+    if (n === 1) return [[1]];
+    const half = n / 2;
+    const B = braedenMatrix(half, alpha);
+    // build top & bottom
+    const top = B.map(row => [...row.map(v => alpha * v), ...row]);
+    const bottom = B.map(row => [...row, ...row.map(v => -alpha * v)]);
+    return top.concat(bottom);
+  }
+
+  document.getElementById('go').onclick = () => {
+    const n = parseInt(document.getElementById('n').value);
+    const alpha = parseFloat(document.getElementById('alpha').value);
+    if ((n & (n - 1)) !== 0) {
+      alert('n must be a power of 2: 1,2,4,8…');
+      return;
+    }
+    const M = braedenMatrix(n, alpha);
+    const out = document.getElementById('output');
+    out.innerHTML = '';  // clear
+    M.forEach(row => {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'row';
+      row.forEach(val => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = (val>0?'+':'') + val;
+        // color
+        cell.style.background = val > 0 ? '#cce' : '#ecc';
+        rowDiv.appendChild(cell);
+      });
+      out.appendChild(rowDiv);
+    });
+  };
+  </script>
+</body>
+</html>
